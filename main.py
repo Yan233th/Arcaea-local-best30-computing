@@ -30,8 +30,10 @@ def potential_compute (score, chart_constant):
 
 def output_best30 (potential_list):
     with open('./Best30.txt', 'w') as file:
+        file.write (f'Best 30 AVG: {best30:.8f}\n')
+        file.write (f'Maximum PTT: {max_ptt:.8f}\n\n')
         for i in range(30):
-            file.write (f'歌曲名称: {potential_list[i][1]}\n')
+            file.write (f'#{i+1}: {potential_list[i][1]}\n')
             file.write (f'难度: {potential_list[i][2]}\n')
             file.write (f'定数: {potential_list[i][3]}\n')
             file.write (f'分数: {potential_list[i][4]}\n')
@@ -46,8 +48,9 @@ def output_best30 (potential_list):
     os.startfile (output_path)
 
 def print_best30 (potential_list):
+
     for i in range (30):
-        print (f'歌曲名称: {potential_list[i][1]}')
+        print (f'#{i+1}: {potential_list[i][1]}')
         print (f'难度: {potential_list[i][2]}')
         print (f'定数: {potential_list[i][3]}')
         print (f'分数: {potential_list[i][4]}')
