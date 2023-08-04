@@ -27,7 +27,7 @@ if __name__ == '__main__':
     score_path = filedialog.askopenfilename ()
     score_sql = sqlite3.connect (score_path)
     score_cursor = score_sql.cursor ()
-    if not os.path.exists('./arcsong.db'):
+    if not os.path.exists ('./arcsong.db'):
         print ('不存在 "arcsong.db" 文件, 将进行下载')
         get_song_database.DownloadLatest ()
     data_sql = sqlite3.connect ('./arcsong.db')
@@ -41,11 +41,20 @@ if __name__ == '__main__':
         rating = result[0][0] / 10
         song_name = result[0][1]
         potential = potential_compute (score, rating)
-        bisect.insort (potential_list, (potential, song_name, rating, score, difficulty_name[song_difficulty]), key=custom_sort)
+        bisect.insort (potential_list, [potential, song_name, rating, score, difficulty_name[song_difficulty]], key = custom_sort)
+    length = len (potential_list)
+    if (length > 30):
+        length = 30
+    else:
+        print ()
+        print ('你好像还没有打到30首歌哦')
     Best30 = 0
-    for i in range(30):
+    for i in range (length):
         Best30 += potential_list[i][0]
-    Best30 /= 30
+    if length != 0:
+        Best30 /= length
+    else:
+        print ('你甚至一首歌也没打')
     print ()
     print (f'你的Best30为: {Best30}')
     print ()
@@ -53,7 +62,7 @@ if __name__ == '__main__':
     action = input ('input: ')
     print ()
     if (action == '1'):
-        for i in range(30):
+        for i in range (length):
             print (f'歌曲名称: {potential_list[i][1]}')
             print (f'定数: {potential_list[i][2]}')
             print (f'难度: {potential_list[i][3]}')
