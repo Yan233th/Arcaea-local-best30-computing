@@ -3,6 +3,7 @@ import bisect
 from tkinter import filedialog
 import os
 import sys
+import csv
 
 import get_song_database
 
@@ -29,7 +30,7 @@ def potential_compute (score, chart_constant):
         return chart_constant + 1 + (score-9800000) / 200000
 
 def output_best30 (potential_list):
-    with open('./Best30.txt', 'w') as file:
+    with open('./Best30.txt', 'w', encoding="utf-8") as file:
         file.write (f'Best 30 AVG: {best30:.8f}\n')
         file.write (f'Maximum PTT: {max_ptt:.8f}\n\n')
         for i in range(30):
@@ -47,6 +48,20 @@ def output_best30 (potential_list):
     print ()
     os.startfile (output_path)
 
+def output_csv (potential_list):
+    with open('./Best30.csv', 'w') as file:
+        file.write (f'#,乐曲名,难度,定数,分数,潜力值,PURE,FAR,LOST\n')
+        for i in range(30):
+            file.write(f'{i+1},')
+            file.write(f'{potential_list[i][1]},')
+            file.write (f'{potential_list[i][2]}, {potential_list[i][3]}, {potential_list[i][4]},')
+            file.write (f'{potential_list[i][0]:.8f},{potential_list[i][6]} (+{potential_list[i][5]}),{potential_list[i][7]},{potential_list[i][8]}')
+            file.write('\n')
+    output_path = os.path.join (os.getcwd (), 'Best30.csv')
+    print (f'已输出到"{output_path}"')
+    print ()
+    os.startfile (output_path)
+
 def print_best30 (potential_list):
 
     for i in range (30):
@@ -59,11 +74,13 @@ def print_best30 (potential_list):
         print (f'FAR:  {potential_list[i][7]}')
         print (f'LOST: {potential_list[i][8]}')
         print ()
-    print ('[0] 退出程序; [1] 输出到txt文件中')
+    print ('[0] 退出程序; [1] 输出到txt文件中; [2] 输出到csv文件中')
     do_output_best30 = input ('input: ')
     print ()
     if (do_output_best30 == '1'):
         output_best30 (potential_list)
+    elif (do_output_best30 == '2'):
+        output_csv(potential_list)
 
 
 if __name__ == '__main__':
