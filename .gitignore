@@ -161,3 +161,4 @@ cython_debug/
 
 # Arcaea-Local-Best30-Computing
 *.db
+*.txt

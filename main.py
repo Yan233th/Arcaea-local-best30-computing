@@ -32,42 +32,70 @@ if __name__ == '__main__':
         get_song_database.DownloadLatest ()
     data_sql = sqlite3.connect ('./arcsong.db')
     data_cursor = data_sql.cursor ()
-    score_cursor.execute ('SELECT songId, songDifficulty, score FROM scores')
+    score_cursor.execute ('SELECT songId, songDifficulty, score, shinyPerfectCount, perfectCount, nearCount, missCount FROM scores')
     score_list = score_cursor.fetchall ()
     potential_list = []
-    for song_id, song_difficulty, score in score_list:
-        data_cursor.execute (f'SELECT rating, name_en FROM charts WHERE song_id = "{song_id}" and rating_class = {song_difficulty}')
+    for song_id, song_difficulty, score, critical_pure, pure, far, lost in score_list:
+        data_cursor.execute (f'SELECT rating, name_en, name_jp FROM charts WHERE song_id = "{song_id}" and rating_class = {song_difficulty}')
         result = (data_cursor.fetchall ())
         rating = result[0][0] / 10
-        song_name = result[0][1]
+        if result[0][2] == '':
+            song_name = result[0][1]
+        else:
+            song_name = result[0][1] + ' | ' + result[0][2]
         potential = potential_compute (score, rating)
-        bisect.insort (potential_list, [potential, song_name, rating, score, difficulty_name[song_difficulty]], key = custom_sort)
+        bisect.insort (potential_list, [potential, song_name, difficulty_name[song_difficulty], rating, score, critical_pure, pure, far, lost], key = custom_sort)
     length = len (potential_list)
-    if (length > 30):
-        length = 30
-    else:
+    if (length < 30):
         print ()
         print ('你好像还没有打到30首歌哦')
-    Best30 = 0
-    for i in range (length):
-        Best30 += potential_list[i][0]
-    if length != 0:
-        Best30 /= length
+        print ()
     else:
-        print ('你甚至一首歌也没打')
-    print ()
-    print (f'你的Best30为: {Best30}')
-    print ()
-    print ('[0] 退出程序; [1] 输出完整Best30')
-    action = input ('input: ')
-    print ()
-    if (action == '1'):
-        for i in range (length):
-            print (f'歌曲名称: {potential_list[i][1]}')
-            print (f'定数: {potential_list[i][2]}')
-            print (f'难度: {potential_list[i][3]}')
-            print (f'潜力值: {potential_list[i][0]}')
+        best30 = 0
+        max_r10 = 0
+        for i in range (30):
+            best30 += potential_list[i][0]
+        for i in range (10):
+            max_r10 += potential_list[i][0]
+        max_ptt = (best30 + max_r10) / 40
+        best30 /= 30
+        print ()
+        print (f'Best 30 AVG: {best30:.8f}')
+        print (f'Maximum PTT: {max_ptt:.8f}')
+        print ()
+        print ('[0] 退出程序; [1] 输出完整Best30')
+        action1 = input ('input: ')
+        print ()
+        if (action1 == '1'):
+            for i in range (30):
+                print (f'歌曲名称: {potential_list[i][1]}')
+                print (f'难度: {potential_list[i][2]}')
+                print (f'定数: {potential_list[i][3]}')
+                print (f'分数: {potential_list[i][4]}')
+                print (f'潜力值: {potential_list[i][0]:.8f}')
+                print (f'PURE: {potential_list[i][6]} (+{potential_list[i][5]})')
+                print (f'FAR:  {potential_list[i][7]}')
+                print (f'LOST: {potential_list[i][8]}')
+                print ()
+            print ('[0] 退出程序; [1] 输出到txt文件中')
+            action2 = input ('input: ')
             print ()
+            if (action2 == '1'):
+                with open('./Best30.txt', 'w') as file:
+                    for i in range(30):
+                        file.write (f'歌曲名称: {potential_list[i][1]}\n')
+                        file.write (f'难度: {potential_list[i][2]}\n')
+                        file.write (f'定数: {potential_list[i][3]}\n')
+                        file.write (f'分数: {potential_list[i][4]}\n')
+                        file.write (f'潜力值: {potential_list[i][0]:.8f}\n')
+                        file.write (f'PURE: {potential_list[i][6]} (+{potential_list[i][5]})\n')
+                        file.write (f'FAR:  {potential_list[i][7]}\n')
+                        file.write (f'LOST: {potential_list[i][8]}\n')
+                        file.write('\n')
+                output_path = os.path.join (os.getcwd (), 'Best30.txt')
+                print (f'已输出到"{output_path}"')
+                print ()
+                os.startfile (output_path)
 
     data_cursor.close ()
     data_sql.close ()
