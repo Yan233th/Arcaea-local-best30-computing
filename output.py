@@ -8,6 +8,7 @@ def ask_startfile (file_path):
     if (do_startfile == '1'):
         os.startfile (file_path)
         print ('已启动文件')
+        print ()
 
 def best30_print (potential_list):
     for i in range (30):
