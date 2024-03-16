@@ -1,4 +1,4 @@
-# Arcaea-Local-Best30-Computing
+# Arcaea-local-best30-computing
 
 一个Arcaea本地Best30(b30)计算器, 无论你是苹果或是安卓, 只要你能够拿到Arcaea软件数据目录下的st3文件, 那么就可以计算
 
